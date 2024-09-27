@@ -5,7 +5,7 @@ import csv
 import warnings
 
 def calculate_deltas_in_intervals(df, cols, interval=30):
-    # the alex lover interval approach^tm
+    # the [name redacted] interval approach^tm
     # this script will calculate delta in 30 frame interval (1 second)
     # i do this instead of frame by frame as every student will move a similar speed frame by frame
     # but the entire second will better differentiate movements between students
