@@ -95,5 +95,5 @@ if __name__ == "__main__":
     warnings.filterwarnings("ignore", category=FutureWarning)
     # end of bad practices
 
-    folder_path = './day_master'  # example for now
+    folder_path = './day_master'  # REPLACE WITH FILE PATH --
     process_all_files_in_folder(folder_path) # starts the thing
