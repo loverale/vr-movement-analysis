@@ -23,7 +23,6 @@ def calculate_deltas_in_intervals(df, cols, interval=30):
 
     return np.array(deltas)  # np has dope functions
 
-
 def process_file(file_path):
     # creates a file that stores deltas
 
@@ -113,5 +112,5 @@ if __name__ == "__main__":
     warnings.filterwarnings("ignore", category=FutureWarning)
     # end of bad practices
 
-    folder_path = './day_master'  # REPLACE WITH FILE PATH
+    folder_path = './day_master'  # REPLACE WITH FILE PATH THIS JUST HAPPENS TO BE MY PATH IN THE VIRTUAL ENVIRONMENT
     process_all_files_in_folder(folder_path) # starts the thing
