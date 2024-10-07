@@ -4,6 +4,37 @@ import os
 import csv
 import warnings
 
+def calculate_distance_between_people(df, cols)
+    print("implement, including rough idea")
+
+
+def vector_from_rotation(rotation):
+    # Assume rotation is a tuple (pitch, yaw) in degrees
+    pitch, yaw = np.radians(rotation)
+
+    # Calculate the forward vector from the head rotation (simplified version)
+    forward_x = np.cos(pitch) * np.cos(yaw)
+    forward_y = np.cos(pitch) * np.sin(yaw)
+    forward_z = np.sin(pitch)
+
+    return np.array([forward_x, forward_y, forward_z])
+
+def calculate_gaze_towards_instructor(student_pos, student_rotation, instructor_pos, threshold=0.9)
+    print("implement, including rough idea")
+    # Get the gaze direction of person A
+    gaze_direction = vector_from_rotation(person_a_rotation)
+
+    # Calculate the direction from person A to person B
+    direction_to_b = np.array(person_b_pos) - np.array(person_a_pos)
+    direction_to_b = direction_to_b / np.linalg.norm(direction_to_b)  # Normalize
+
+    # Calculate the dot product between the gaze direction and the direction to B
+    dot_product = np.dot(gaze_direction, direction_to_b)
+
+    # Check if the dot product is above the threshold
+    return dot_product > threshold
+
+
 def calculate_deltas_in_intervals(df, cols, interval=30):
     # the [name redacted] interval approach^tm
     # this script will calculate delta in 30 frame interval (1 second)
