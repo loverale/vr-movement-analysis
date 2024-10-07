@@ -35,24 +35,42 @@ def process_file(file_path):
     data = pd.read_csv(file_path, delim_whitespace=True)
 
     # define columns for head and hand positions
-    head_cols = ['HeadPosition_x', 'HeadPosition_y', 'HeadPosition_z']
-    hand_cols = ['LeftHandPosition_x', 'LeftHandPosition_y', 'LeftHandPosition_z',
-                 'RightHandPosition_x', 'RightHandPosition_y', 'RightHandPosition_z']
+    head_position = ['HeadPosition_x', 'HeadPosition_y', 'HeadPosition_z']
+    head_rotation = ['HeadRotation_x', 'HeadRotation_y', 'HeadRotation_z']
+    right_hand_position = ['RightHandPosition_x', 'RightHandPosition_y', 'RightHandPosition_z']
+    left_hand_position = ['LeftHandPosition_x', 'LeftHandPosition_y', 'LeftHandPosition_z']
+    right_hand_rotation = ['RightHandRotation_x', 'RightHandRotation_y', 'RightHandRotation_z']
+    left_hand_rotation = ['LeftHandRotation_x', 'LeftHandRotation_y', 'LeftHandRotation_z']
+
 
     # calculate the deltas in 30-frame intervals for the entire dataset
-    head_deltas = calculate_deltas_in_intervals(data, head_cols)
-    hand_deltas = calculate_deltas_in_intervals(data, hand_cols)
+    head_position_deltas = calculate_deltas_in_intervals(data, head_position)
+    head_rotation_deltas = calculate_deltas_in_intervals(data, head_rotation)
+
+    right_hand_position_deltas = calculate_deltas_in_intervals(data, right_hand_position)
+    left_hand_position_deltas = calculate_deltas_in_intervals(data, left_hand_position)
+    right_hand_rotation_deltas = calculate_deltas_in_intervals(data, right_hand_rotation)
+    left_hand_rotation_deltas = calculate_deltas_in_intervals(data, left_hand_rotation)
 
     # calculate the average of the interval deltas
-    avg_head_delta = np.sum(head_deltas) ## my thought process behind sum rather than mean -- better differentiates bt active and non-active (non-vr) users
+    avg_head_position_delta = np.sum(head_position_deltas) ## my thought process behind sum rather than mean -- better differentiates bt active and non-active (non-vr) users
+    avg_head_rotation_delta = np.sum(head_rotation_deltas)
+
     #avg_head_delta = np.mean(np.sum(head_deltas)) # this is what using mean looks like
-    avg_hand_delta = np.sum(hand_deltas)
+    avg_left_hand_position_delta = np.sum(left_hand_position_deltas)
+    avg_right_hand_position_delta = np.sum(right_hand_position_deltas)
+    avg_left_hand_rotation_delta = np.sum(left_hand_rotation_deltas)
+    avg_right_hand_rotation_delta = np.sum(right_hand_rotation_deltas)
 
     # prepare the output
     result_df = pd.DataFrame({
         'participant_id': [participant_id],
-        'avg_head_delta': [avg_head_delta],
-        'avg_hand_delta': [avg_hand_delta]
+        'avg_head_position': [avg_head_position_delta],
+        'avg_head_rotation': [avg_head_rotation_delta],
+        'avg_left_hand_position': [avg_left_hand_position_delta],
+        'avg_right_hand_position': [avg_right_hand_position_delta],
+        'avg_left_hand_rotation': [avg_left_hand_rotation_delta],
+        'avg_right_hand_rotation': [avg_right_hand_rotation_delta]
     })
 
     return result_df
