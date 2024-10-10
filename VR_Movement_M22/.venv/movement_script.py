@@ -4,10 +4,14 @@ import os
 import csv
 import warnings
 
+# todo:// implement
 def calculate_distance_between_people(df, cols)
-    print("implement, including rough idea")
+    print("Calculating Distance Between People")
+    # this should just be a student_x - prof_x | student_y - prof_y | student_z - prof_z with absolute value
+    # feels like its not optimal, but not really able to think of a more clever solution
 
-
+# This function should return a general idea of what direction the student is looking.
+# refer to trigonometry textbooks, alex has textbook if need reference :)
 def vector_from_rotation(rotation):
     # Assume rotation is a tuple (pitch, yaw) in degrees
     pitch, yaw = np.radians(rotation)
@@ -19,28 +23,38 @@ def vector_from_rotation(rotation):
 
     return np.array([forward_x, forward_y, forward_z])
 
+# general idea of this function is to figure out where the student is looking, and see if the professors coordinates are within
+# that field of view.
+# fairly barbaric calculation, as it doesn't necessarily account for distance
+# function returns 1 for each line calculation, goal is to divide by 30 to get seconds looked at prof
 def calculate_gaze_towards_instructor(student_pos, student_rotation, instructor_pos, threshold=0.9)
-    print("implement, including rough idea")
-    # Get the gaze direction of person A
-    gaze_direction = vector_from_rotation(person_a_rotation)
+    print("Calculating Gaze")
+    # Get the gaze direction of student
+    student_gaze_direction = vector_from_rotation(student_rotation)
 
-    # Calculate the direction from person A to person B
-    direction_to_b = np.array(person_b_pos) - np.array(person_a_pos)
-    direction_to_b = direction_to_b / np.linalg.norm(direction_to_b)  # Normalize
+    # Calculate the direction from student to instructor
+    direction_to_prof = np.array(instructor_pos) - np.array(student_pos)
+    direction_to_prof = direction_to_prof / np.linalg.norm(direction_to_prof)  # Normalize
 
     # Calculate the dot product between the gaze direction and the direction to B
-    dot_product = np.dot(gaze_direction, direction_to_b)
+    dot_product = np.dot(student_gaze_direction, direction_to_prof)
 
     # Check if the dot product is above the threshold
-    return dot_product > threshold
+    # threshhold is fairly arbitrary here, but general idea is there. probably will reduce to 70-80 if i can find some FoV lit
+    if(dot_product > threshold):
+        returnvalue = 1
+    else:
+        returnvalue = 0
+
+    # general use would be to divide by 30 (30fps) to get a general seconds-looked-at-prof
+    return returnvalue
 
 
+# the [name redacted] interval approach^tm
+# this script will calculate delta in 30 frame interval (1 second)
+# i do this instead of frame by frame as every student will move a similar speed frame by frame
+# but the entire second will better differentiate movements between students
 def calculate_deltas_in_intervals(df, cols, interval=30):
-    # the [name redacted] interval approach^tm
-    # this script will calculate delta in 30 frame interval (1 second)
-    # i do this instead of frame by frame as every student will move a similar speed frame by frame
-    # but the entire second will better differentiate movements between students
-
     # initialization to ensure empty df per file
     deltas = []
     num_rows = len(df)
@@ -54,7 +68,8 @@ def calculate_deltas_in_intervals(df, cols, interval=30):
 
     return np.array(deltas)  # np has dope functions
 
-def process_file(file_path):
+# this function does all the delta calculations and file store.
+def delta_process_file(file_path):
     # creates a file that stores deltas
 
     # extract participant ID from the file name
@@ -76,7 +91,6 @@ def process_file(file_path):
     # calculate the deltas in 30-frame intervals for the entire dataset
     head_position_deltas = calculate_deltas_in_intervals(data, head_position)
     head_rotation_deltas = calculate_deltas_in_intervals(data, head_rotation)
-
     right_hand_position_deltas = calculate_deltas_in_intervals(data, right_hand_position)
     left_hand_position_deltas = calculate_deltas_in_intervals(data, left_hand_position)
     right_hand_rotation_deltas = calculate_deltas_in_intervals(data, right_hand_rotation)
@@ -106,11 +120,14 @@ def process_file(file_path):
     return result_df
 
 # proving my insanity
+# not really needed for final computations. was just for descriptive
 def row_counter(file_path):
     with open(file_path, 'r', newline='') as file:
         reader = csv.reader(file, delimiter='\t')
         row_count = sum(1 for row in reader)  # Count the number of rows
     return row_count
+
+# this function goes through each folder in the directory and runs the functions
 
 def process_all_files_in_folder(folder_path):
     # iterates through all the files and starts the path through other functions
@@ -126,7 +143,7 @@ def process_all_files_in_folder(folder_path):
         if file_name.endswith('.tsv'):
             print(f"processing {file_path}")
             row_count = row_count + row_counter(file_path)
-            result_df = process_file(file_path)
+            result_df = delta_process_file(file_path) # DELTA CALCULATION, COMMENT OUT IF NOT RUNNING THAT DATA
             all_results = pd.concat([all_results, result_df], ignore_index=True)
 
     # master file master file
