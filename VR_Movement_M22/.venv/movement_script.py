@@ -7,12 +7,18 @@ import warnings
 # setup instructions:
 # pip install pandas numpy os csv warning
 
-# todo:// implement
-# the data passed into the function isn't correct, won't just be df, cols, change later
-def calculate_distance_between_people(df, cols)
-    print("Calculating Distance Between People")
-    # this should just be a student_x - prof_x | student_y - prof_y | student_z - prof_z with absolute value
-    # feels like its not optimal, but not really able to think of a more clever solution
+# fairly easy but probably not optimal
+def calculate_distance_between_people(student_pos_x, student_pos_y, student_pos_z, prof_pos_x, prof_pos_y, prof_pos_z):
+
+    # components of distance function
+    x2 = pow(student_pos_x - prof_pos_x, 2)
+    y2 = pow(student_pos_y - prof_pos_y, 2)
+    z2 = pow(student_pos_z - prof_pos_z, 2)
+
+    # calculates the distance
+    distance = np.sqrt(x2 + y2 + z2)
+
+    return distance
 
 # This function should return a general idea of what direction the student is looking.
 # refer to trigonometry textbooks, [name redacted] has textbook if need reference :)
