@@ -4,6 +4,9 @@ import os
 import csv
 import warnings
 
+# setup instructions:
+# pip install pandas numpy os csv warning
+
 # todo:// implement
 def calculate_distance_between_people(df, cols)
     print("Calculating Distance Between People")
@@ -48,7 +51,6 @@ def calculate_gaze_towards_instructor(student_pos, student_rotation, instructor_
 
     # general use would be to divide by 30 (30fps) to get a general seconds-looked-at-prof
     return returnvalue
-
 
 # the [name redacted] interval approach^tm
 # this script will calculate delta in 30 frame interval (1 second)
@@ -128,7 +130,6 @@ def row_counter(file_path):
     return row_count
 
 # this function goes through each folder in the directory and runs the functions
-
 def process_all_files_in_folder(folder_path):
     # iterates through all the files and starts the path through other functions
 
@@ -154,7 +155,6 @@ def process_all_files_in_folder(folder_path):
 
 # actual program that runs the things defined above
 if __name__ == "__main__":
-
     # never replicate this line of code
     # do as i say not as i do
     warnings.filterwarnings("ignore", category=FutureWarning)
