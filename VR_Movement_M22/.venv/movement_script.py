@@ -11,7 +11,7 @@ folder_path = './master'  # REPLACE WITH FILE PATH THIS JUST HAPPENS TO BE MY PA
 # pip install pandas numpy os csv warning
 
 # fairly easy but probably not optimal
-def calculate_distance_between_people(student_pos_x, student_pos_y, student_pos_z, prof_pos_x, prof_pos_y, prof_pos_z):
+def calculate_distance(student_pos_x, student_pos_y, student_pos_z, prof_pos_x, prof_pos_y, prof_pos_z):
 
     # components of distance function
     x2 = pow(student_pos_x - prof_pos_x, 2)
@@ -71,7 +71,7 @@ def calculate_deltas_in_intervals(df, cols):
     num_rows = len(df)
 
     # does the thing
-    for i in range(0, num_rows):
+    for i in range(0, num_rows -1):
         delta = df.loc[i+1, cols].values - df.loc[i, cols].values
         deltas.append(np.abs(delta))  # Store the absolute delta
 
@@ -155,10 +155,9 @@ def gaze_process_file(file_path, pPROF):
     head_position = ['HeadPosition_x', 'HeadPosition_y', 'HeadPosition_z']
     head_rotation = ['HeadRotation_x', 'HeadRotation_y', 'HeadRotation_z']
 
-    rows_to_iterate = ['full_frame_no', 'HeadPosition_x', 'HeadPosition_y', 'HeadPosition_z', 'HeadRotation_x', 'HeadRotation_y', 'HeadRotation_z']
+    distance_df = []
 
-    # temp copy delete later
-    # frame_number, head_position, head_rotation
+    rows_to_iterate = ['full_frame_no', 'HeadPosition_x', 'HeadPosition_y', 'HeadPosition_z', 'HeadRotation_x', 'HeadRotation_y', 'HeadRotation_z']
     for i, row in stu_data[rows_to_iterate].iterrows():
         row_number = row['full_frame_no']
         stu_pos = row['HeadPosition_x'], row['HeadPosition_y'], row['HeadPosition_z']
@@ -169,6 +168,8 @@ def gaze_process_file(file_path, pPROF):
             ins_pos = corresponding_row['HeadPosition_x'], corresponding_row['HeadPosition_y'], corresponding_row[
                 'HeadPosition_z']
             gaze_towards_instructor += calculate_gaze_towards_instructor(stu_pos, stu_rot, ins_pos)
+            distance_df.append(calculate_distance(row['HeadPosition_x'], row['HeadPosition_y'], row['HeadPosition_z'], corresponding_row['HeadPosition_x'], corresponding_row['HeadPosition_y'], corresponding_row[
+                'HeadPosition_z']))
         else:
             # print(f"    No match found for frame, skipping") # this was clogging the terminal, couldnt track by eye progress
             continue
@@ -184,7 +185,8 @@ def gaze_process_file(file_path, pPROF):
     result_df = pd.DataFrame({
         'participant_id': [participant_id],
         'gazeins': [gaze_towards_instructor],
-        'total_time': [student_total_time]
+        'total_time': [student_total_time],
+        'stuinsdis': [np.mean(distance_df)]
     })
 
     return result_df
@@ -210,13 +212,13 @@ def delta_all_files_in_folder(folder_path):
 
         # .tsv check
         if file_name.endswith('.tsv'):
-            print(f"processing {file_path}")
+            print(f"    processing {file_path}")
             row_count = row_count + row_counter(file_path)
             result_df = delta_process_file(file_path) # DELTA CALCULATION, COMMENT OUT IF NOT RUNNING THAT DATA
             all_results = pd.concat([all_results, result_df], ignore_index=True)
 
     # master file master file
-    output_file = os.path.join(folder_path, 'all_participants_processed.csv')
+    output_file = os.path.join(folder_path, 'all_participants_delta.csv')
     all_results.to_csv(output_file, index=False)
     print(f"All processed data saved to {output_file}")
     print(f"Row count: {row_count}")
@@ -333,7 +335,7 @@ def gaze_process_all_files(folder_path):
         for sub_file in file_name:
             # .tsv check
             if sub_file.endswith('.tsv'):
-                print(f"processing {sub_file}")
+                print(f"    processing {sub_file}")
                 file_path = os.path.join(folder_path, sub_file)
                 with open(file_path, 'r') as f:
                     row_count = row_count + sum(1 for line in f) - 1 # -1 for headers
@@ -358,7 +360,7 @@ if __name__ == "__main__":
 
     #global folder_path
     print("PROCESSING DELTA STARTED")
-    #delta_all_files_in_folder(folder_path) # starts the thing
+    delta_all_files_in_folder(folder_path) # starts the delta calcs
 
-    print("PROCESSING STU-INS GAZE")
-    gaze_process_all_files(folder_path)
+    print("PROCESSING STU-INS GAZE & DISTANCE")
+    gaze_process_all_files(folder_path) # starts both gaze and distance (at same time for optimization reasons)
