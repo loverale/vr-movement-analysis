@@ -110,10 +110,10 @@ def delta_process_file(file_path):
     avg_head_rotation_delta = np.sum(head_rotation_deltas)
 
     #avg_head_delta = np.mean(np.sum(head_deltas)) # this is what using mean looks like
-    avg_left_hand_position_delta = np.sum(left_hand_position_deltas)
-    avg_right_hand_position_delta = np.sum(right_hand_position_deltas)
-    avg_left_hand_rotation_delta = np.sum(left_hand_rotation_deltas)
-    avg_right_hand_rotation_delta = np.sum(right_hand_rotation_deltas)
+    avg_left_hand_position_delta = np.mean(np.sum(left_hand_position_deltas))
+    avg_right_hand_position_delta = np.mean(np.sum(right_hand_position_deltas))
+    avg_left_hand_rotation_delta = np.mean(np.sum(left_hand_rotation_deltas))
+    avg_right_hand_rotation_delta = np.sum(np.sum(right_hand_rotation_deltas))
 
     # prepare the output
     result_df = pd.DataFrame({
@@ -181,6 +181,7 @@ def gaze_process_file(file_path, pPROF):
     gaze_towards_instructor = round(gaze_towards_instructor, 2)
 
 
+
     # prepare the output
     result_df = pd.DataFrame({
         'participant_id': [participant_id],
@@ -212,7 +213,7 @@ def delta_all_files_in_folder(folder_path):
 
         # .tsv check
         if file_name.endswith('.tsv'):
-            print(f"    processing {file_path}")
+            print(f"    processing file {file_path}")
             row_count = row_count + row_counter(file_path)
             result_df = delta_process_file(file_path) # DELTA CALCULATION, COMMENT OUT IF NOT RUNNING THAT DATA
             all_results = pd.concat([all_results, result_df], ignore_index=True)
